@@ -689,45 +689,7 @@ function Products1({ t }) {
 
   // Données des produits avec les nouveaux produits
   const products = [
-    {
-      id: 1,
-      nom: t.oliveKalamata,
-      prix: 89.99,
-      promotion: 74.99,
-      image: "https://i.ibb.co/ZpXkjqJr/olives.jpg",
-      categorie: "olives",
-      description: t.oliveKalamataDesc,
-      icon: OliveIcon,
-      weight: "500g",
-      origin: "Fès, Maroc",
-      isOrganic: true
-    },
-    {
-      id: 2,
-      nom: t.almonds,
-      prix: 125.00,
-      promotion: 99.99,
-      image: "https://i.ibb.co/HfkdhBZw/images-7.jpg",
-      categorie: "fruits-secs",
-      description: t.almondsDesc,
-      icon: AlmondIcon,
-      weight: "400g",
-      origin: "Fès, Maroc",
-      isOrganic: true
-    },
-    {
-      id: 3,
-      nom: t.driedFigs,
-      prix: 85.00,
-      promotion: 69.99,
-      image: "https://i.ibb.co/6R7b3N2C/97438273-124505359247708-6799848461328973824-n.jpg",
-      categorie: "fruits-secs",
-      description: t.driedFigsDesc,
-      icon: FigIcon,
-      weight: "350g",
-      origin: "Fès, Maroc",
-      isOrganic: true
-    },
+  
     {
       id: 4,
       nom: "Limon Da9 (ليمون داق)",
@@ -764,45 +726,7 @@ function Products1({ t }) {
       origin: "Fès, Maroc",
       isOrganic: true
     },
-    {
-      id: 7,
-      nom: t.marinatedOlives,
-      prix: 79.99,
-      promotion: 64.99,
-      image: "https://i.ibb.co/HfkdhBZw/images-7.jpg",
-      categorie: "olives",
-      description: t.marinatedOlivesDesc,
-      icon: OliveIcon,
-      weight: "450g",
-      origin: "Fès, Maroc",
-      isOrganic: true
-    },
-    {
-      id: 8,
-      nom: t.mediterraneanMix,
-      prix: 199.99,
-      promotion: 169.99,
-      image: "https://i.ibb.co/6R7b3N2C/97438273-124505359247708-6799848461328973824-n.jpg",
-      categorie: "melanges",
-      description: t.mediterraneanMixDesc,
-      icon: MixIcon,
-      weight: "600g",
-      origin: "Fès, Maroc",
-      isOrganic: true
-    },
-    {
-      id: 9,
-      nom: t.saltedPistachios,
-      prix: 180.00,
-      promotion: 149.99,
-      image: "https://i.ibb.co/ZpXkjqJr/olives.jpg",
-      categorie: "fruits-secs",
-      description: t.saltedPistachiosDesc,
-      icon: PistachioIcon,
-      weight: "300g",
-      origin: "Fès, Maroc",
-      isOrganic: false
-    }
+    
   ];
 
   const handleButtonHover = (buttonId, isHovered) => {
