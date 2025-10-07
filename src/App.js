@@ -378,110 +378,466 @@ const LemonIcon = () => (
 );
 
 // ===== COMPOSANT HEADER AVEC NAVIGATION =====
+
+
+
+
 const Header = ({ t, language, changeLanguage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('top');
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 100;
+      setScrolled(isScrolled);
+
+      // Update active section based on scroll position
+      const sections = ['top', 'products', 'about', 'contact'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
+        }
+        return false;
+      });
+      if (current) setActiveSection(current);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+ const scrollToSection = (sectionId) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    const headerHeight = 126;
+    
+    // Method 1: Modern approach
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+    
+    // Method 2: Fallback for mobile
+    const scrollToPosition = (position) => {
+      if ('scrollBehavior' in document.documentElement.style) {
+        window.scrollTo({
+          top: position,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback for older browsers
+        window.scrollTo(0, position);
+      }
+    };
+
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
+      scrollToPosition(targetPosition);
+    });
+    
+    // Fallback: If no movement detected after 300ms, use instant scroll
+    setTimeout(() => {
+      if (Math.abs(window.pageYOffset - targetPosition) > 50) {
+        window.scrollTo(0, targetPosition);
+      }
+    }, 300);
+  }
+  
+  setIsMenuOpen(false);
+  setActiveSection(sectionId);
+};
+  // Animation variants
+  const headerVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+        duration: 0.6
+      }
     }
-    setIsMenuOpen(false);
   };
+
+  const scrollHeaderVariants = {
+    top: {
+      backgroundColor: "rgba(255,255,255,0)",
+      boxShadow: "0px 0px 0px rgba(0,0,0,0)",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    },
+    scrolled: {
+      backgroundColor: "var(--white)",
+      boxShadow: "0px 1px 10px rgba(0,0,0,0.1)",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const navItemVariants = {
+    hidden: { y: -20, opacity: 0 },
+    visible: (i) => ({
+      y: 0,
+      opacity: 1,
+      transition: {
+        delay: i * 0.1,
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }
+    }),
+    hover: {
+      y: -2,
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
+  const mobileMenuVariants = {
+    closed: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    },
+    open: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const mobileNavItemVariants = {
+    closed: { x: -50, opacity: 0 },
+    open: (i) => ({
+      x: 0,
+      opacity: 1,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    })
+  };
+
+  const toggleButtonVariants = {
+    initial: { scale: 1, rotate: 0 },
+    hover: { 
+      scale: 1.1,
+      backgroundColor: "rgba(255,255,255,0.2)",
+      transition: {
+        type: "spring",
+        stiffness: 400
+      }
+    },
+    tap: { 
+      scale: 0.9,
+      transition: {
+        type: "spring",
+        stiffness: 400
+      }
+    }
+  };
+
+  const brandVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
+  const languageButtonVariants = {
+    initial: { scale: 1 },
+    hover: {
+      scale: 1.1,
+      backgroundColor: "rgba(255,255,255,0.2)",
+      transition: {
+        type: "spring",
+        stiffness: 400
+      }
+    },
+    tap: {
+      scale: 0.9,
+      transition: {
+        type: "spring",
+        stiffness: 400
+      }
+    },
+    active: {
+      scale: 1.05,
+      backgroundColor: "var(--white)",
+      color: "var(--olive-primary)",
+      transition: {
+        type: "spring",
+        stiffness: 400
+      }
+    }
+  };
+
+  const subHeaderVariants = {
+    hidden: { y: -50, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+        delay: 0.2
+      }
+    }
+  };
+
+  const navItems = [
+    { id: 'top', label: t.home },
+    { id: 'products', label: t.products },
+    { id: 'about', label: t.about },
+    { id: 'contact', label: t.contact }
+  ];
 
   return (
     <>
       {/* Sub Header */}
-      <div className="sub-header">
+      <motion.div 
+        className="sub-header"
+        variants={subHeaderVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="container">
           <div className="row">
             <div className="col-md-8 col-xs-12">
               <ul className="left-info">
-                <li>
+                <motion.li
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <a href="tel:0766548709">
                     <i className="fa fa-phone"></i>0766548709
                   </a>
-                </li>
-                <li>
+                </motion.li>
+                <motion.li
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <a href="https://maps.google.com/?q=3ain ch9ef fes" target="_blank" rel="noopener noreferrer">
                     <i className="fa fa-map-marker"></i>3ain ch9ef, Fès
                   </a>
-                </li>
-                <li>
+                </motion.li>
+                <motion.li
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <a href="#">
                     <i className="fa fa-clock-o"></i>{t.businessHours}
                   </a>
-                </li>
+                </motion.li>
               </ul>
             </div>
             <div className="col-md-4">
-              <div className="header-language-switcher">
-                <button
-                  className={`lang-btn ${language === 'fr' ? 'active' : ''}`}
-                  onClick={() => changeLanguage('fr')}
-                >
-                  FR
-                </button>
-                <button
-                  className={`lang-btn ${language === 'ar' ? 'active' : ''}`}
-                  onClick={() => changeLanguage('ar')}
-                >
-                  AR
-                </button>
-              </div>
+              <ul className="right-icons">
+                <li>
+                  <div className="header-language-switcher">
+                    <motion.button
+                      className={`lang-btn ${language === 'fr' ? 'active' : ''}`}
+                      onClick={() => changeLanguage('fr')}
+                      variants={languageButtonVariants}
+                      initial="initial"
+                      whileHover="hover"
+                      whileTap="tap"
+                      animate={language === 'fr' ? 'active' : 'initial'}
+                    >
+                      FR
+                    </motion.button>
+                    <motion.button
+                      className={`lang-btn ${language === 'ar' ? 'active' : ''}`}
+                      onClick={() => changeLanguage('ar')}
+                      variants={languageButtonVariants}
+                      initial="initial"
+                      whileHover="hover"
+                      whileTap="tap"
+                      animate={language === 'ar' ? 'active' : 'initial'}
+                    >
+                      AR
+                    </motion.button>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Header */}
-      <header className="">
-        <nav className="navbar navbar-expand-lg">
+      <motion.header
+        variants={scrollHeaderVariants}
+        animate={scrolled ? "scrolled" : "top"}
+        initial="top"
+      >
+        <motion.nav 
+          className="navbar navbar-expand-lg"
+          variants={headerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="container">
-            <a className="navbar-brand" href="#top">
+            <motion.a 
+              className="navbar-brand" 
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection('top');
+              }}
+              variants={brandVariants}
+              whileHover="hover"
+              whileTap="tap"
+              initial="initial"
+            >
               <div className="brand-container">
                 <AnimatedOlive />
                 <h2>Olives Miloud</h2>
               </div>
-            </a>
+            </motion.a>
             
-            <button 
-              className="navbar-toggler"
+            {/* Mobile Toggle Button */}
+            <motion.button 
+              className="navbar-toggler" 
+              type="button" 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-controls="navbarResponsive" 
+              aria-expanded={isMenuOpen} 
+              aria-label="Toggle navigation"
+              variants={toggleButtonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              initial="initial"
             >
-              <span className="navbar-toggler-icon">☰</span>
-            </button>
+              <motion.span 
+                className="navbar-toggler-icon"
+                animate={{ rotate: isMenuOpen ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                
+              </motion.span>
+            </motion.button>
 
-            <div className={`navbar-collapse ${isMenuOpen ? 'show' : ''}`}>
+            {/* Mobile Menu */}
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div 
+                  className="navbar-collapse mobile-menu"
+                  variants={mobileMenuVariants}
+                  initial="closed"
+                  animate="open"
+                  exit="closed"
+                >
+                  <ul className="navbar-nav ml-auto">
+                    {navItems.map((item, index) => (
+                      <motion.li 
+                        key={item.id}
+                        className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                        variants={mobileNavItemVariants}
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                        custom={index}
+                        whileHover={{ x: 10 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <a 
+                          className="nav-link" 
+                          href={`#${item.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            scrollToSection(item.id);
+                          }}
+                        >
+                          {item.label}
+                          {item.id === 'top' && <span className="sr-only">(current)</span>}
+                        </a>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Desktop Navigation */}
+            <div className={`collapse navbar-collapse desktop-menu ${isMenuOpen ? 'show' : ''}`}>
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <a className="nav-link" href="#top" onClick={() => scrollToSection('top')}>
-                    {t.home}
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#products" onClick={() => scrollToSection('products')}>
-                    {t.products}
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#quality" onClick={() => scrollToSection('quality')}>
-                    {t.about}
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="#contact" onClick={() => scrollToSection('contact')}>
-                    {t.contact}
-                  </a>
-                </li>
+                {navItems.map((item, index) => (
+                  <motion.li 
+                    key={item.id}
+                    className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                    variants={navItemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={index}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
+                    <a 
+                      className="nav-link" 
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(item.id);
+                      }}
+                    >
+                      {item.label}
+                      {item.id === 'top' && <span className="sr-only">(current)</span>}
+                    </a>
+                  </motion.li>
+                ))}
               </ul>
             </div>
           </div>
-        </nav>
-      </header>
+        </motion.nav>
+      </motion.header>
     </>
   );
 };
+
+
+
+
+
 
 // ===== COMPOSANT BANNER =====
 const Banner = ({ t }) => {
@@ -1092,7 +1448,7 @@ const Quality = ({ t }) => {
   ];
 
   return (
-    <div className="fun-facts" id="quality">
+    <div className="fun-facts" id="about">
       <div className="container">
         <div className="row">
           <div className="col-md-6">
